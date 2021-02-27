@@ -1,4 +1,7 @@
-modules/biotiger/__init__.pyc
-modules/biotiger/index.pyc
-modules/biotiger/output.pyc
-modules/biotiger/rate.pyc
+
+# Pycache info
+*.pyc
+tests/__pycache__/
+biotiger/__pycache__/
+# PyCharm info
+.idea

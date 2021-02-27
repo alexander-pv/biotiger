@@ -1,10 +1,11 @@
-#!/usr/bin/python
 
-import sys, os
+import os
+import sys
+import argparse
+from biotiger import index, output, rate
 sys.path.append(os.path.realpath('../modules'))
 sys.path.append(os.path.realpath('./modules'))
 
-import argparse
 
 def parse_args(args):
     mode = args.pop(0)
@@ -43,6 +44,7 @@ def parse_args(args):
 
     opts = parser.parse_args(args)
     return (mode, opts)
+
 
 def die_with_help():
     print """
@@ -158,49 +160,47 @@ ipython: https://ipython.org/
      """
     sys.exit(1)
 
+
 def die_with_message(message):
-	print message
-	sys.exit(1)
+    print message
+    sys.exit(1)
 
 
-## MAIN ##
-if len(sys.argv) < 2:
-	die_with_help()
+if __name__ == '__main__':
+    if len(sys.argv) < 2:
+        die_with_help()
 
-args = sys.argv[1:]
-(mode, opts) = parse_args(args)
+    args = sys.argv[1:]
+    (mode, opts) = parse_args(args)
 
-if mode == 'index':
-    from biotiger import index
-    index.run(opts)
-elif mode == 'rate':
-    from biotiger import rate
-    rate.run(opts)
-elif mode == 'output':
-    from biotiger import output
-    output.run(opts)
+    if mode == 'index':
+        index.run(opts)
+    elif mode == 'rate':
+        rate.run(opts)
+    elif mode == 'output':
+        output.run(opts)
 
-# Options not yet implemented!!
-# """
-#     -ptp                Specifies that a PTP test should be run. 
-#                         * Note * this option has a huge effect on running time!
+    # Options not yet implemented!!
+    # """
+    #     -ptp                Specifies that a PTP test should be run.
+    #                         * Note * this option has a huge effect on running time!
 
-#     -z|randomisations   Number of randomisations to be used for the PTP test. 
-#                         -z <int>: each site will be randomised <int> times. <int> is a whole number.
+    #     -z|randomisations   Number of randomisations to be used for the PTP test.
+    #                         -z <int>: each site will be randomised <int> times. <int> is a whole number.
 
-#                         Default is 100
+    #                         Default is 100
 
-#     -p|p_value          Specify p-value which denotes significance in PTP test.
-#                         -p <float>: site will be denoted as significant if p-value is better than <float>.
-#                         <float> is a floating point number.
+    #     -p|p_value          Specify p-value which denotes significance in PTP test.
+    #                         -p <float>: site will be denoted as significant if p-value is better than <float>.
+    #                         <float> is a floating point number.
 
-#                         Default is 0.05
+    #                         Default is 0.05
 
-#     -pl|pval_list       Write a list of p-values to a specified file.
-#                         -pl <file.txt>: writes list of p-values for each site to file.txt.
+    #     -pl|pval_list       Write a list of p-values to a specified file.
+    #                         -pl <file.txt>: writes list of p-values for each site to file.txt.
 
-#                         Default is <input_file_prefix>.pval
-# """
+    #                         Default is <input_file_prefix>.pval
+    # """
 
 
 

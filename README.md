@@ -54,11 +54,11 @@ Specify unknown characters in the alignment. Unknown characters are omitted from
 
 1. Generate a `.ti` file for complete sequence named `full_seq.ti` & set unknowns to `?` and `-` :
 ```bash
-    tiger index -i my_file.aln -o full_seq -u ?,-
+    tiger.py index -i my_file.aln -o full_seq -u ?,-
 ```
 2. Generate 10 subsets of the data with an output prefix of `tiger_split` and a reference:
 ```bash
-    tiger index -i my_file.aln -o tiger_split -s 10
+    tiger.py index -i my_file.aln -o tiger_split -s 10
 ```
 Results in files named `tiger_split.0.ti`, `tiger_split.1.ti`, and so on, along with `tiger_split.ref.ti`
 
@@ -83,11 +83,11 @@ A list of the rate at each site may be optionally written to a specified file. `
 **Examples:**
 1. Calculate rates for file test.ref.ti against itself and create a file containing a list of rates:
 ```bash
-    tiger rate -i test.ref.ti -rl
+    tiger.py rate -i test.ref.ti -rl
 ```
 2. Calculate rates for file `test.0.ti` against the reference index (`test.ref.ti`)
 ```bash
-    tiger rate -i test.0.ti -r test.ref.ti 
+    tiger.py rate -i test.0.ti -r test.ref.ti 
 ```
 
 ### tiger *output* options:
@@ -138,11 +138,11 @@ Set the number of bins to be used. `-b <int>` : Sites will be placed into `<int>
 **Examples:**
 1.  Write a FastA file, masking site that fall into bin 1, bin 2, bin 9 and bin 10 of 10 bins:
 ```bash
-    tiger output -i sample.gr -fa my_data.fa -exc 1,2,9,10 -b 10 --mask
+    tiger.py output -i sample.gr -fa my_data.fa -exc 1,2,9,10 -b 10 --mask
 ```
 2. Write a NEXUS file combining test.0.gr, test.1.gr, test.2.gr with sites sorted on rank
 ```bash
-    tiger output -c list_of_gr_files.txt -fa my_data.fa -f 3
+    tiger.py output -c list_of_gr_files.txt -fa my_data.fa -f 3
 ```
 
 ## Tiger and Python

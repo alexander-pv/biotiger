@@ -1,6 +1,7 @@
-#!/usr/bin/env python
 
 import re, sys, cPickle, os, math
+from biotiger.common.constants import OUTPUT_DIR, ROOT, OUTPUT_PATH
+
 
 def check_opts(opts):
 	if opts.input is None:
@@ -16,8 +17,10 @@ def check_opts(opts):
 		except ValueError:
 			die_with_message("Please provide an integer value for --split option")
 
+
 def file_exists(f):
 	return os.path.exists(os.path.realpath(f))
+
 
 def check_aln(seqs):
 	base = len(seqs[0])
@@ -25,6 +28,7 @@ def check_aln(seqs):
 		if len(s) != base:
 			die_with_message("Sequences are not of even lengths. Please ensure the data is aligned.")
 	return base
+
 
 def parse_fasta(input):
 	data = []
@@ -43,6 +47,7 @@ def parse_fasta(input):
 
 	return data
 
+
 def patterns(data):
 	seqs = [i[1] for i in data]
 
@@ -53,6 +58,7 @@ def patterns(data):
 		sites.append(s)
 
 	return [site_pattern(s) for s in sites]
+
 
 def site_pattern(site):
 	pat = {}
@@ -66,6 +72,7 @@ def site_pattern(site):
 
 	return "|".join( [",".join([str(x) for x in pat[o]]) for o in order ])
 
+
 def pattern_counts_sets(pats):
 	uniq = {}
 	for x, p in enumerate(pats):
@@ -78,29 +85,32 @@ def pattern_counts_sets(pats):
 			uniq[p]["sites"].append(x)
 		except KeyError:
 			uniq[p]["sites"] = [x]
-
-
 	return uniq
+
 
 def run(opts):
 	check_opts(opts)
 	seq_data = parse_fasta(opts.input)
 	seq_len = check_aln(seq_data)
 	pats = patterns(seq_data)
-
 	uniq_pats = pattern_counts_sets(pats)
+
+	if OUTPUT_DIR not in os.listdir(ROOT):
+		os.mkdir(OUTPUT_PATH)
 
 	prefix = opts.output
 	if opts.output is None:
 		prefix = gen_prefix(opts.input)
-	out = "%s.ref.ti" % prefix
-	with open(out, 'wb') as fh:
+
+	outfile = os.path.join(OUTPUT_PATH, "%s.ref.ti" % prefix)
+	with open(outfile, 'wb') as fh:
 		#cPickle.dump(seq_data, fh)
 		cPickle.dump(uniq_pats, fh)
 	
 	if opts.split is not None:
 		write_subsets(uniq_pats, int(opts.split), prefix)
-		
+
+
 def write_subsets(pats, num, prefix):
 	step = math.ceil(float(len(pats))/num)
 	c = 1
@@ -121,8 +131,10 @@ def write_subsets(pats, num, prefix):
 				break
 
 	for i in range(len(subs)):
-		with open("%s.%d.ti" % (prefix, i), 'wb') as fh:
+		outfile = os.path.join(OUTPUT_PATH, "%s.%d.ti" % (prefix, i))
+		with open(outfile, 'wb') as fh:
 			cPickle.dump(subs[i], fh)
+
 
 def gen_prefix(input):
 	if "/" in input:
@@ -138,13 +150,14 @@ def gen_prefix(input):
 		o = i
 	return o
 
+
 def die_with_help():
     print """
 ****************
 TIGER  v2.0 Help:
 ****************
 
-tiger index Options:
+tiger.py index Options:
 
     -i|input    Specify input file. File must be in FastA format and must be aligned prior.
                 Datasets with uneven sequence lengths will return an error.
@@ -162,17 +175,17 @@ tiger index Options:
 
     Examples:
         1. Generate a .tgr file for complete sequence named full_seq.tgr & set unknowns to ? and - :
-                tiger index -i my_file.aln -o full_seq -u ?,-
+                tiger.py index -i my_file.aln -o full_seq -u ?,-
 
         2. Generate 10 subsets of the data with an output prefix of tiger_split and a reference:
-                tiger index -i my_file.aln -o tiger_split -s 10
+                tiger.py index -i my_file.aln -o tiger_split -s 10
             ** Results in files named tiger_split.1.tgr, tiger_split.2,tgr, and so on, along with
                tiger_split.ref.tgr
    
      """
     sys.exit(1)
 
+
 def die_with_message(message):
 	print message
 	sys.exit(1)
-	

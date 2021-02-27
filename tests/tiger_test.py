@@ -1,8 +1,9 @@
+
 import sys, os
 sys.path.append(os.path.realpath('../modules'))
 sys.path.append(os.path.realpath('./modules'))
 
-from biotiger import *
+from biotiger import index, rate
 import pytest, filecmp, tempfile, shutil
 
 # create temp dir for writing tests
@@ -11,6 +12,7 @@ tmpdir = tempfile.mkdtemp(dir=os.getcwd())
 fasta = ""
 patterns = []
 unique_patterns = []
+
 
 def test_parse():
     global fasta
@@ -22,12 +24,14 @@ def test_parse():
     
     assert fasta == exp_fasta
 
+
 def test_pattern():
     site = ['A', 'A', 'A', 'G', 'G', 'T']
     exp = "0,1,2|3,4|5"
     got = index.site_pattern(site)
 
     assert got == exp
+
 
 def test_pattern_list():
     global patterns
@@ -46,6 +50,7 @@ def test_pattern_list():
     patterns = index.patterns(fasta)
 
     assert patterns == exp
+
 
 def test_pattern_counts():
     global unique_patterns
@@ -81,6 +86,7 @@ def test_set():
 
     assert got == exp
 
+
 def test_sort():
     patterns = ['A', 'B', 'C', 'D']
     rates = [0.4, 0.1, 0.3, 0.2]
@@ -101,6 +107,7 @@ def test_sort():
 #        manage_pickle.run('save', opts)
 #        
 #        assert filecmp.cmp("%s/test.csv" % tmpdir, 'test/data/exp.csv')
+
 
 def cleanup():	
         shutil.rmtree(tmpdir)

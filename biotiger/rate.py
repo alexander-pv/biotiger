@@ -1,4 +1,6 @@
+
 import cPickle, sys, os, re
+from biotiger.common.constants import OUTPUT_DIR, ROOT, OUTPUT_PATH
 
 def check_opts(opts):
     if opts.input is None:
@@ -124,8 +126,12 @@ def run(opts):
     else:
         prefix = opts.output
 
+    if OUTPUT_DIR not in os.listdir(ROOT):
+        os.mkdir(OUTPUT_PATH)
+    outfile = os.path.join(OUTPUT_PATH, "%s.gr" % prefix)
+
     # write out .gr pickle
-    with open("%s.gr" % prefix, 'wb') as fh:
+    with open(outfile, 'wb') as fh:
         cPickle.dump(rates, fh)
 
     # write rate list if required
@@ -135,7 +141,8 @@ def run(opts):
             rl = "%s.rates" % prefix
         else:
             rl = opts.rate_list
-        rlh = open(rl, 'w')
+        outfile = os.path.join(OUTPUT_PATH, rl)
+        rlh = open(outfile, 'w')
         rlh.write( "\n".join([str(x) for x in ratel]) )
         rlh.close()
 
@@ -165,7 +172,7 @@ def die_with_help():
 TIGER  v2.0 Help:
 ****************
 
-tiger rate Options:
+tiger.py rate Options:
 
     -i|input            Specify input file. File should be in .ti format.
 
@@ -196,9 +203,9 @@ tiger rate Options:
 
     Examples:
         1. Calculate rates for file test.ref.ti against itself, with a list of rates:
-            tiger rate -i test.ref.ti -rl
+            tiger.py rate -i test.ref.ti -rl
         2. Calculate rates for file test.0.ti against test.ref.ti with a PTP test and a list of p values
-            tiger rate -i test.0.ti -r test.ref.ti -ptp -pl
+            tiger.py rate -i test.0.ti -r test.ref.ti -ptp -pl
       
      """
     sys.exit(1)

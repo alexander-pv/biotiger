@@ -1,6 +1,7 @@
-#!/usr/bin/env python
 
 import re, sys, cPickle, os
+from biotiger.common.constants import OUTPUT_DIR, ROOT, OUTPUT_PATH
+
 
 def check_opts(opts):
 	# check files sanity
@@ -30,7 +31,6 @@ def check_opts(opts):
 			die_with_message("Invalid -b option '%s'. Please provide an integer" % opt.bins)
 	if opts.exclude_only is not None and opts.include_only is not None:
 		die_with_message("--include_only and -exclude_only options are mutually exclusive")
-	
 
 
 def bin(rate_d, bin_no):
@@ -144,7 +144,7 @@ def split_fasta_into_positions(seq_data, species_order):
 
 	return pos_list
 
-def nexus_header(binned_data, species, rep_seq):
+def nexus_header(binned_data, species_order, rep_seq):
 	nex_header = ''
 	nex_header += "#NEXUS\n\n[This file contains data that has been analysed for site specific rates]\n"
 	nex_header += "[using TIGER, developed by Carla Cummins in the laboratory of]\n"
@@ -163,6 +163,7 @@ def nexus_header(binned_data, species, rep_seq):
 
 	return nex_header
 
+
 def detect_datatype(seq):
 	seq = seq.upper()
 	oLen = float(len(seq))
@@ -174,7 +175,7 @@ def detect_datatype(seq):
 	if perc < 20.0:
 		return "DNA"
 	else:
-		seq_C = seq.replace("[01]+", "", seq)
+		seq_C = seq.replace("[01]+", "")
 		if len(seq_C) == 0:
 			return "standard"
 		else:
@@ -280,6 +281,8 @@ def run(opts):
 	# parse original fasta for seq data
 	seq_data = parse_fasta(opts.fasta)
 
+
+
 	# write output in specified format
 	if ( opts.format == '4' ): # output fasta
 		output_str = generate_fasta(binned_data, seq_data, excl_bins, opts.mask)
@@ -290,10 +293,12 @@ def run(opts):
 
 	if ( opts.output is not None ):
 		try:
-			outfile = open("%s%s" % (opts.output, suffix), 'w')
+			outpath = os.path.join(OUTPUT_PATH, "%s%s" % (opts.output, suffix))
+			outfile = open(outpath, 'w')
 			outfile.write(output_str)
 		except IOError:
 			die_with_message("Cannot open outfile %s%s" % (opts.output, suffix))
+		outfile.close()
 	else:
 		print output_str
 
@@ -304,7 +309,7 @@ def die_with_help():
 TIGER  v2.0 Help:
 ****************
 
-tiger output Options:
+tiger.py output Options:
 	
 	-i|input            Specify input file. Must be in .gr format.
 
@@ -337,10 +342,10 @@ tiger output Options:
 						Default is 10.
 	Examples:
 		1.  Write a FastA file, masking site that fall into Bin1, Bin2, Bin9 and Bin10 of 10 bins:
-			tiger output -i sample.gr -fa my_data.fa -f 4 -exc 1,2,9,10 -b 10 --mask
+			tiger.py output -i sample.gr -fa my_data.fa -f 4 -exc 1,2,9,10 -b 10 --mask
 
 		2. Write a NEXUS file combining test.0.gr, test.1.gr, test.2.gr with sites sorted on rank
-			tiger output -c list_of_gr_files.txt -fa my_data.fa -f 3
+			tiger.py output -c list_of_gr_files.txt -fa my_data.fa -f 3
    
 	 """
 	sys.exit(1)

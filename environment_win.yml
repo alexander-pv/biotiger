@@ -1,0 +1,36 @@
+name: py2
+channels:
+  - defaults
+dependencies:
+  - ca-certificates=2021.1.19
+  - certifi=2020.6.20
+  - pip=19.3.1=py27_0
+  - python=2.7.18
+  - setuptools=44.0.0=py27_0
+  - sqlite=3.30.1
+  - vc=9
+  - vs2008_runtime=9.00.30729.1
+  - wheel=0.36.2
+  - wincertstore=0.2
+  - pip:
+    - atomicwrites==1.4.0
+    - attrs==20.3.0
+    - backports-functools-lru-cache==1.6.1
+    - colorama==0.4.4
+    - configparser==4.0.2
+    - contextlib2==0.6.0.post1
+    - funcsigs==1.0.2
+    - importlib-metadata==2.1.1
+    - more-itertools==5.0.0
+    - packaging==20.9
+    - pathlib2==2.3.5
+    - pluggy==0.13.1
+    - py==1.10.0
+    - pyparsing==2.4.7
+    - pytest==4.6.11
+    - scandir==1.10.0
+    - six==1.15.0
+    - wcwidth==0.2.5
+    - zipp==1.2.0
+prefix: C:\Users\alrpo\.conda\envs\py2
+

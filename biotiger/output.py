@@ -1,6 +1,8 @@
 
 import re, sys, cPickle, os
-from biotiger.common.constants import OUTPUT_DIR, ROOT, OUTPUT_PATH
+import logging
+from biotiger.common.constants import OUTPUT_PATH
+from biotiger.common.functions import make_output_dir, write_msg
 
 
 def check_opts(opts):
@@ -56,13 +58,13 @@ def bin(rate_d, bin_no):
 
 	return bin_d
 
+
 def get_bin(parts, rate):
 	for i in range(len(parts)-1):
 		if rate >= parts[i] and rate <= parts[i+1]:
 			return (len(parts)-1)-i
 
-	
-#def histogram(num_list, name_list):
+
 def histogram(binned_data):
 	histo = ''
 	width = 60
@@ -98,7 +100,11 @@ def histogram(binned_data):
 
 	return histo
 
+
 def generate_nexus(binned_data, seq_data, excl_bins, mask, format_opt):
+
+	logging.info("Generating nexus")
+
 	nexus = ''
 
 	species_order = sorted(seq_data.keys())
@@ -119,6 +125,7 @@ def generate_nexus(binned_data, seq_data, excl_bins, mask, format_opt):
 
 	return nexus
 
+
 def sorted_position_order(binned_data):
 	sorted_pos = []
 
@@ -133,6 +140,7 @@ def sorted_position_order(binned_data):
 
 	return sorted_pos
 
+
 def split_fasta_into_positions(seq_data, species_order):
 	pos_list = []
 
@@ -143,6 +151,7 @@ def split_fasta_into_positions(seq_data, species_order):
 		pos_list.append(pos)
 
 	return pos_list
+
 
 def nexus_header(binned_data, species_order, rep_seq):
 	nex_header = ''
@@ -181,6 +190,7 @@ def detect_datatype(seq):
 		else:
 			return "protein"
 
+
 def pad_str(taxon_names):
 	max_len = 0;
 	for name in taxon_names:
@@ -195,7 +205,9 @@ def pad_str(taxon_names):
 
 	return padded
 
+
 def generate_fasta(binned_data, seq_data, excl_bins, mask):
+	logging.info("Generating fasta")
 	bin_map = map_bins_to_positions(binned_data)
 	fasta_str = ''
 
@@ -217,6 +229,7 @@ def generate_fasta(binned_data, seq_data, excl_bins, mask):
 
 	return fasta_str
 
+
 def map_bins_to_positions(binned_data):
 	bin_map = {}
 
@@ -226,6 +239,7 @@ def map_bins_to_positions(binned_data):
 			bin_map[pos] = cur_bin
 
 	return bin_map
+
 
 def combine_rates(combine_file):
 	combine_fh = open(combine_file, 'r')
@@ -239,6 +253,7 @@ def combine_rates(combine_file):
 
 	return all_rates
 
+
 def bins_to_exclude(opts):
 	excl_bins = []
 	if ( opts.exclude_only is not None ):
@@ -250,6 +265,7 @@ def bins_to_exclude(opts):
 				excl_bins.append(b)
 
 	return excl_bins
+
 
 def parse_fasta(fasta_file):
 	seq_data = {}
@@ -264,7 +280,9 @@ def parse_fasta(fasta_file):
 
 	return seq_data
 
+
 def run(opts):
+	make_output_dir()
 	check_opts(opts)
 
 	if ( opts.input is not None ):
@@ -281,8 +299,6 @@ def run(opts):
 	# parse original fasta for seq data
 	seq_data = parse_fasta(opts.fasta)
 
-
-
 	# write output in specified format
 	if ( opts.format == '4' ): # output fasta
 		output_str = generate_fasta(binned_data, seq_data, excl_bins, opts.mask)
@@ -296,6 +312,7 @@ def run(opts):
 			outpath = os.path.join(OUTPUT_PATH, "%s%s" % (opts.output, suffix))
 			outfile = open(outpath, 'w')
 			outfile.write(output_str)
+			write_msg(outpath)
 		except IOError:
 			die_with_message("Cannot open outfile %s%s" % (opts.output, suffix))
 		outfile.close()

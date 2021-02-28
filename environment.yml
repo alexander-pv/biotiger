@@ -15,7 +15,7 @@ dependencies:
   - readline=8.1
   - setuptools=44.0.0=py27_0
   - sqlite=3.33.0
-  - tk=8.6.10
+  - tk=8.6.10=hbc83047_0
   - wheel=0.36.2
   - zlib=1.2.11
   - pip:
@@ -35,6 +35,7 @@ dependencies:
     - pytest==4.6.11
     - scandir==1.10.0
     - six==1.15.0
+    - tqdm==4.58.0
     - wcwidth==0.2.5
     - zipp==1.2.0
 prefix: /home/alexander/anaconda3/envs/py2

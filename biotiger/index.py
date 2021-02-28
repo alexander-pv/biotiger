@@ -1,6 +1,9 @@
 
 import re, sys, cPickle, os, math
-from biotiger.common.constants import OUTPUT_DIR, ROOT, OUTPUT_PATH
+import logging
+from tqdm import tqdm
+from biotiger.common.constants import OUTPUT_PATH
+from biotiger.common.functions import make_output_dir, write_msg
 
 
 def check_opts(opts):
@@ -31,12 +34,13 @@ def check_aln(seqs):
 
 
 def parse_fasta(input):
+	logging.info("Parsing fasta")
 	data = []
 	fa_str = "\n".join(open(input).readlines())
 	parts = fa_str.split(">")
 	parts = parts[1:]
 
-	for p in parts:
+	for p in tqdm(parts):
 		spl = p.split("\n")
 		name = spl.pop(0)
 		seq = ""
@@ -89,14 +93,14 @@ def pattern_counts_sets(pats):
 
 
 def run(opts):
+
+	make_output_dir()
+
 	check_opts(opts)
 	seq_data = parse_fasta(opts.input)
 	seq_len = check_aln(seq_data)
 	pats = patterns(seq_data)
 	uniq_pats = pattern_counts_sets(pats)
-
-	if OUTPUT_DIR not in os.listdir(ROOT):
-		os.mkdir(OUTPUT_PATH)
 
 	prefix = opts.output
 	if opts.output is None:
@@ -106,6 +110,8 @@ def run(opts):
 	with open(outfile, 'wb') as fh:
 		#cPickle.dump(seq_data, fh)
 		cPickle.dump(uniq_pats, fh)
+	write_msg(outfile)
+
 	
 	if opts.split is not None:
 		write_subsets(uniq_pats, int(opts.split), prefix)
@@ -134,6 +140,7 @@ def write_subsets(pats, num, prefix):
 		outfile = os.path.join(OUTPUT_PATH, "%s.%d.ti" % (prefix, i))
 		with open(outfile, 'wb') as fh:
 			cPickle.dump(subs[i], fh)
+		write_msg(outfile)
 
 
 def gen_prefix(input):

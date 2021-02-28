@@ -1,6 +1,7 @@
 
 import os
 import sys
+import logging
 import argparse
 from biotiger import index, output, rate
 sys.path.append(os.path.realpath('../modules'))
@@ -167,6 +168,9 @@ def die_with_message(message):
 
 
 if __name__ == '__main__':
+
+    logging.basicConfig(format='%(levelname)s %(asctime)s %(message)s', level=logging.INFO)
+
     if len(sys.argv) < 2:
         die_with_help()
 

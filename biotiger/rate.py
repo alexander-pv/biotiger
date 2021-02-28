@@ -1,6 +1,10 @@
 
-import cPickle, sys, os, re
-from biotiger.common.constants import OUTPUT_DIR, ROOT, OUTPUT_PATH
+import cPickle, sys, os
+from tqdm import tqdm
+import logging
+from biotiger.common.constants import OUTPUT_PATH
+from biotiger.common.functions import make_output_dir, write_msg
+
 
 def check_opts(opts):
     if opts.input is None:
@@ -28,8 +32,10 @@ def check_opts(opts):
 
 
 def rate_sites(pat_counts, ref_counts):
+
+    logging.info("Rating sites")
     rate_d = pat_counts.copy()
-    for k in pat_counts.keys():
+    for k in tqdm(pat_counts.keys()):
         if "|" not in k:
             rate_d[k]["rate"] = 1.0
         else:
@@ -43,6 +49,7 @@ def rate_sites(pat_counts, ref_counts):
 
 
 def site_rate(a, ref_counts):
+
     pat_rates = []
     dividand = 0
 
@@ -78,8 +85,10 @@ def score(a, b):
 
     return float(found)/sets
 
+
 def set_pattern(p):
     return [set([int(y) for y in x.split(',')]) for x in p.split('|')]
+
 
 def sort(rates, patterns):
     if len(rates) != len(patterns):
@@ -94,9 +103,12 @@ def sort(rates, patterns):
 
     return [ [ rates[o] for o in sort_order ], [ patterns[p] for p in sort_order ] ]
 
+
 def rate_list(pats):
+
+    logging.info("Making rate list")
     rates = {}
-    for k in pats.keys():
+    for k in tqdm(pats.keys()):
         r = pats[k]['rate']
         for s in pats[k]['sites']:
             rates[s] = r
@@ -109,6 +121,7 @@ def rate_list(pats):
 
 
 def run(opts):
+    make_output_dir()
     check_opts(opts)
 
     with open(opts.input, 'rb') as in_h:
@@ -126,13 +139,11 @@ def run(opts):
     else:
         prefix = opts.output
 
-    if OUTPUT_DIR not in os.listdir(ROOT):
-        os.mkdir(OUTPUT_PATH)
     outfile = os.path.join(OUTPUT_PATH, "%s.gr" % prefix)
-
     # write out .gr pickle
     with open(outfile, 'wb') as fh:
         cPickle.dump(rates, fh)
+    write_msg(outfile)
 
     # write rate list if required
     if opts.rate_list:
@@ -145,6 +156,7 @@ def run(opts):
         rlh = open(outfile, 'w')
         rlh.write( "\n".join([str(x) for x in ratel]) )
         rlh.close()
+        write_msg(outfile)
 
     # do PTP test if required
     # if opts.run_ptp:
@@ -165,6 +177,7 @@ def gen_prefix(input):
     else:
         o = i
     return o
+
 
 def die_with_help():
     print """
@@ -209,6 +222,7 @@ tiger.py rate Options:
       
      """
     sys.exit(1)
+
 
 def die_with_message(message):
     print message

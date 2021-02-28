@@ -29,6 +29,7 @@ dependencies:
     - pyparsing==2.4.7
     - pytest==4.6.11
     - scandir==1.10.0
+    - tqdm==4.58.0
     - six==1.15.0
     - wcwidth==0.2.5
     - zipp==1.2.0

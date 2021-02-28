@@ -15,7 +15,7 @@ The project was based on python 2. Here are the steps that you can make to confi
    However, if it doesn't work, you can create your own environment from scratch:\
    `conda create --name py2 python=2.7.*`\
    `conda activate py2`\
-   `pip install pytest`
+   `pip install pytest tqdm`
 
     Feel free to contact to fix the latest version of the repo.
 

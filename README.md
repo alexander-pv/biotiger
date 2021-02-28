@@ -2,7 +2,7 @@
 More information on the algorithm itself can be seen on the link: http://sysbio.oxfordjournals.org/content/60/6/833.short
 
 1. [Installation](manuals/installation.md)
-2. [Biotiger manual](manuals/installation.md)
+2. [Biotiger manual](manuals/readme.md)
 
 ### References:
 
